@@ -1,6 +1,6 @@
 [![Logo](images/vprioritizer_logo.png)]()
 
-[![BHUSA2020](images/BHUSA2020.svg)](https://www.blackhat.com/us-20/arsenal/schedule/#vprioritizer-learn-to-say-no-to-almost-every-vulnerability-art-of-risk-prioritisation-21192) \| [Overview](#overview) \| [How it works](how-it-works) \| [Quickstart](quickstart) \| [Roadmap](roadmap) \| [Contact Me](#contribution--contact-me)
+[![BHUSA2020](images/BHUSA2020.svg)](https://www.blackhat.com/us-20/arsenal/schedule/#vprioritizer-learn-to-say-no-to-almost-every-vulnerability-art-of-risk-prioritisation-21192) \| [Overview](#overview) \| [How it works](#how-it-works) \| [Quickstart](#quickstart) \| [Roadmap](#roadmap) \| [Contact Me](#contribution--contact-me)
 
 # Overview
 As indicated by sources like vulndb & cve, on a daily basis, approximately 50 new vulnerabilities become known to industry and it’s safe to assume that count is going to increase furthermore. It’s a huge number of vulnerabilities to assess and remediate effectively and quickly. So today organizations are focusing (or should focus) on reducing the risk rather than eliminating it and vulnerability management is (almost) equal to risk prioritisation and risk is a variable and dynamic concept determined by multiple factors.
