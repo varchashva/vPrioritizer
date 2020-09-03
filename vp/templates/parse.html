@@ -1,0 +1,65 @@
+{% extends "master.html" %}
+{% block content %}
+<style>
+    #settings-container {
+        top: 60px;
+        bottom: 0;
+        left: 160px;
+        right: 10px;
+        position: absolute;
+    }
+</style>
+
+<div id="settings-container">
+    <table id="upload_table"  class="table table-striped table-sm table-bordered" style="width:95%">
+        <thead>
+            <tr>
+                <th>File Field</th>
+                <th>vPrioritizer Field</th>
+                <th>Row1</th>
+                <th>Row2</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for entry in entries %}
+            <tr>
+                <td><h5>{{entry.0}}</h5></td>
+                <td><h5>{{entry.1}}</h5></td>
+                <td>
+                    <div style="overflow:auto">
+                        <pre style="white-space: pre-wrap;">{{entry.2}}</pre>
+                    </div>
+                </td>
+                <td>
+                    <div style="overflow:auto">
+                        <pre style="white-space: pre-wrap;">{{entry.3}}</pre>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">
+                    <div id="submit-panel" class="panel" style="background-color:transparent;">
+                           <form id="triage-form" action="/vp/{{project_id}}/upload" method="POST">
+                               <input type="hidden" id="temp_db_id" name="temp_db_id" value="{{temp_db_id}}">
+                               <input type="hidden" id="scanner", name="scanner", value="{{scanner}}">
+                               <button type="submit" class="btn btn-primary" style="color:#FFFFFF;background-color: #264E36;border: none;padding:3px 6px;margin-top:-5px;margin-left:10px;" value="complete" name="complete">
+                                    <i class="glyphicon glyphicon-ok" style="color:#FFFFFF;padding-right:6px"></i>Complete
+                               </button>
+                               <button type="submit" class="btn btn-primary" style="color:#FFFFFF;background-color: #9B1B30;border: none;padding:3px 6px;margin-top:-5px;margin-left:10px;" value="cancel" name="cancel">
+                                    <i class="fa fa-close" style="color:#FFFFFF;padding-right:6px"></i>Cancel
+                                </button>
+                            </form>
+                    </div>
+                    <div class="alert alert-info show" style="background-color:#14A2D2">
+                        <strong>Help!</strong> Results are not parsed correctly? Please <a href="https://github.com/varchashva/vPrioritizer/issues/new">raise an issue</a> mentioning <strong>headers</strong> of the input file.
+                    </div>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+{% endblock %}

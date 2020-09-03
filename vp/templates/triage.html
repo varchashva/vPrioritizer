@@ -1,0 +1,479 @@
+{% extends "master.html" %}
+{% block content %}
+
+
+<style>
+
+/* The switch - the box around the slider */
+.switch {
+  position: absolute;
+  display: inline-block;
+  width: 40px;
+  height: 24px;
+  float:left;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input.default:checked + .slider {
+  background-color: #444;
+}
+input.primary:checked + .slider {
+  background-color: #2196F3;
+}
+input.success:checked + .slider {
+  background-color: #8bc34a;
+}
+input.info:checked + .slider {
+  background-color: #3de0f5;
+}
+input.warning:checked + .slider {
+  background-color: #FFC107;
+}
+input.danger:checked + .slider {
+  background-color: #f44336;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(16px);
+  -ms-transform: translateX(16px);
+  transform: translateX(16px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 24px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+
+
+</style>
+
+
+<script>
+$(document).ready(function(){
+  $("#searchform").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $(".dropdown-menu li").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+
+$(document).ready(function () {
+    $(".selectAll").on( "click", function(e) {
+        var table = $('#triage_table').DataTable();
+        if ($(this).is( ":checked" )) {
+            table.rows(  {"search" : "applied"}  ).select();
+        } else {
+            table.rows( {"search" : "applied"}  ).deselect();
+        }
+    });
+
+    $(".informational_selected").on( "click", function(e) {
+        if ($(this).is( ":checked" )) {
+            var table = $('#triage_table').DataTable();
+            table
+               .column(2)
+               .search("")
+               .draw();
+        }
+        else {
+            var table = $('#triage_table').DataTable();
+            table
+               .column(2)
+               .search("^(?!Informational).*$",true)
+               .draw();
+        }
+    });
+
+
+    $(".select_asset_accessibility").on( "click", function(e) {
+        if ($(this).is( ":checked" )) {
+            if ($("#asset_accessibility_filter").val() == "" ) {
+                filter = [];
+                filter.push(this.value);
+                $("#asset_accessibility_filter").val(JSON.stringify(filter));
+            }
+            else if (! $("#asset_accessibility_filter").val().includes(this.value) ) {
+                var filter = JSON.parse($("#asset_accessibility_filter").val());
+                filter.push(this.value);
+                $("#asset_accessibility_filter").val(JSON.stringify(filter));
+            }
+            var filter_string_array = JSON.parse($("#asset_accessibility_filter").val());
+            var filter_string = "";
+            for (var i = 0; i < filter_string_array.length; i++) {
+
+                filter_string = filter_string.concat(filter_string_array[i]).concat("|");
+            }
+            filter_string = filter_string.substring(0,filter_string.length-1);
+            var table = $('#triage_table').DataTable();
+            table
+               .column(4)
+               .search(filter_string,true)
+               .draw();
+        }
+        else {
+            var filter_string_array = JSON.parse($("#asset_accessibility_filter").val());
+            var filter_string = "";
+            var index = filter_string_array.indexOf(this.value);
+            if (index > -1) {
+                filter_string_array.splice(index, 1);
+            }
+            $("#asset_accessibility_filter").val(JSON.stringify(filter_string_array));
+            var filter_string_array = JSON.parse($("#asset_accessibility_filter").val());
+            var filter_string = "";
+            for (var i = 0; i < filter_string_array.length; i++) {
+                filter_string = filter_string.concat(filter_string_array[i]).concat("|");
+            }
+            filter_string = filter_string.substring(0,filter_string.length-1);
+            var table = $('#triage_table').DataTable();
+            table
+               .column(4)
+               .search(filter_string,true)
+               .draw();
+        }
+    });
+
+    $(".select_asset_criticality").on( "click", function(e) {
+        if ($(this).is( ":checked" )) {
+            if ($("#asset_criticality_filter").val() == "" ) {
+                filter = [];
+                filter.push(this.value);
+                $("#asset_criticality_filter").val(JSON.stringify(filter));
+            }
+            else if (! $("#asset_criticality_filter").val().includes(this.value) ) {
+                var filter = JSON.parse($("#asset_criticality_filter").val());
+                filter.push(this.value);
+                $("#asset_criticality_filter").val(JSON.stringify(filter));
+            }
+            var filter_string_array = JSON.parse($("#asset_criticality_filter").val());
+            var filter_string = "";
+            for (var i = 0; i < filter_string_array.length; i++) {
+
+                filter_string = filter_string.concat(filter_string_array[i]).concat("|");
+            }
+            filter_string = filter_string.substring(0,filter_string.length-1);
+            var table = $('#triage_table').DataTable();
+            table
+               .column(3)
+               .search(filter_string,true)
+               .draw();
+        }
+        else {
+            var filter_string_array = JSON.parse($("#asset_criticality_filter").val());
+            var filter_string = "";
+            var index = filter_string_array.indexOf(this.value);
+            if (index > -1) {
+                filter_string_array.splice(index, 1);
+            }
+            $("#asset_criticality_filter").val(JSON.stringify(filter_string_array));
+            var filter_string_array = JSON.parse($("#asset_criticality_filter").val());
+            var filter_string = "";
+            for (var i = 0; i < filter_string_array.length; i++) {
+                filter_string = filter_string.concat(filter_string_array[i]).concat("|");
+            }
+            filter_string = filter_string.substring(0,filter_string.length-1);
+            var table = $('#triage_table').DataTable();
+            table
+               .column(3)
+               .search(filter_string,true)
+               .draw();
+        }
+    });
+});
+
+$(document).ready(function(){
+    cvss_range = $( "#cvss_range" );
+    var cvss_range_val = $( "#cvss_range_val" );
+    cvss_range.slider({
+        range: true,
+        min: 0,
+        max: 10,
+        step: 1,
+        values: [ 0, 10 ],
+        slide: function( event, ui ) {
+            cvss_range_val.val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+        },
+  	    stop: function( event, ui ) {
+            table.draw();
+        }
+    });
+
+    cvss_range_val.val(cvss_range.slider( "values", 0 ) + " - " + cvss_range.slider( "values", 1 ) );
+
+
+    vprisk_range = $( "#vprisk_range" );
+    var vprisk_range_val = $( "#vprisk_range_val" );
+    vprisk_range.slider({
+        range: true,
+        min: 0,
+        max: 500,
+        step: 1,
+        values: [ 0, 500 ],
+        slide: function( event, ui ) {
+          vprisk_range_val.val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+        },
+        stop: function( event, ui ) {
+          table.draw();
+        }
+    });
+
+    vprisk_range_val.val(vprisk_range.slider( "values", 0 ) + " - " + vprisk_range.slider( "values", 1 ) );
+
+    var table = $('#triage_table').DataTable({
+        columnDefs: [ {
+            orderable: false,
+            className: 'select-checkbox',
+            targets:   0
+        }],
+        select: {
+            style:    'os',
+            selector: 'td:first-child'
+        },
+        "order": [[9,"desc"],[ 5, "desc" ],[1,"asc"]],
+        "pagingType": "full_numbers",
+        "paging": true,
+        "bFilter": true,
+     });
+     $(".selectAll").on( "click", function(e) {
+    if ($(this).is( ":checked" )) {
+        table.rows(  {"search" : "applied"}  ).select();
+    } else {
+        table.rows( {"search" : "applied"}  ).deselect();
+    }
+    });
+
+    $('.dataTables_length').addClass('bs-select');
+});
+
+
+$(document).on('click', ':button', function(event) {
+    var table = $('#triage_table').DataTable()
+    var rows = table.rows( { selected: true } );
+    rows.every( function ( rowIdx, tableLoop, rowLoop ) {
+        var name = $(this.data()[1]).text();
+        var ip = this.data()[6];
+        $("#id").val($("#id").val().concat(",").concat(name).concat("#").concat(ip));
+        console.log($("#id").val());
+    });
+
+    var panelname = "#".concat(event.target.id.split("$")[0].replace("link","panel"));
+    $(panelname).toggle();
+});
+
+var cvss_range;
+$.fn.dataTable.ext.search.push(
+    function( settings, data, dataIndex ) {
+        var min = parseFloat(cvss_range.slider( "values", 0 ));
+        var max = parseFloat(cvss_range.slider( "values", 1 ));
+        var col = parseFloat( data[3] ) || 0; // data[number] = column number
+        if ( ( isNaN( min ) && isNaN( max ) ) ||
+             ( isNaN( min ) && col <= max ) ||
+             ( min <= col   && isNaN( max ) ) ||
+             ( min <= col   && col <= max ) ){
+            return true;
+        }
+        return false;
+    }
+);
+
+var vprisk_range;
+$.fn.dataTable.ext.search.push( function( settings, data, dataIndex ) {
+    var min = parseFloat(vprisk_range.slider( "values", 0 ));
+    var max = parseFloat(vprisk_range.slider( "values", 500 ));
+    var col = parseFloat( data[9] ) || 0; // data[number] = column number
+    if ( ( isNaN( min ) && isNaN( max ) ) ||
+         ( isNaN( min ) && col <= max ) ||
+         ( min <= col   && isNaN( max ) ) ||
+         ( min <= col   && col <= max ) ) {
+        return true;
+    }
+    return false;
+});
+
+</script>
+
+<div id="container">
+<style>
+    #settings-container {
+        top: 50px;
+        bottom: 0;
+        left: 150px;
+        right: 10px;
+        position: absolute;
+    }
+</style>
+
+
+<div id="settings-container">
+    <div style="padding-left:20px;">
+        <table style="width:98%">
+            <tr>
+                <td>
+                    <div id="slider1" style="padding-bottom:10px;padding-top:10px;">
+                        <label>CVSS: </label>
+                        <input class="text" id="cvss_range_val" readonly style="border:0; color:#f6931f; font-weight:bold;width:55px">
+                        <div id="cvss_range" style="width:200px;display:inline-block;"></div>
+                    </div>
+                </td>
+                <td>
+                    <div id="slider" style="padding-bottom:20px;padding-top:20px;">
+                        <label>vPRisk: </label>
+                        <input class="text" id="vprisk_range_val" readonly style="border:0; color:#f6931f; font-weight:bold;width:55px">
+                        <div id="vprisk_range" style="width:200px;display:inline-block;"></div>
+                    </div>
+                </td>
+                <td style="font-size:20px">
+                    <input type="checkbox" class="informational_selected" name="informational_selected" checked="checked">
+                    <i class="fa fa-info-circle" style="padding-right:5px;color:#bfbfbf" title="Informational"></i>
+                </td>
+                <td style="font-size:20px">
+                    <input type="hidden" id="asset_accessibility_filter" name="asset_accessibility_filter" value="">
+                    <input type="checkbox" class="select_asset_accessibility" name="select_asset_accessibility" value="external">
+                    <i class="fa fa-globe" style="padding-right:5px;color:#ff1a1a;font-size:20px" title="External Asset"></i>
+                    <input type="checkbox" class="select_asset_accessibility" name="select_asset_accessibility" value="internal">
+                    <i class="fa fa-desktop" style="padding-right:5px;color:#00b300;font-size:20px" title="Internal Asset"></i>
+                </td>
+                <td style="font-size:20px">
+                    <input type="hidden" id="asset_criticality_filter" name="asset_criticality_filter" value="">
+                    <input type="checkbox" class="select_asset_criticality" name="select_asset_criticality" value="moderate">
+                    <i class="fa fa-arrows" style="padding-right:5px;color:#aaaaaa" title="Moderate Asset"></i>
+                    <input type="checkbox" class="select_asset_criticality" name="select_asset_criticality" value="trivial">
+                    <i class="fa fa-arrow-down" style="padding-right:5px;color:#00b300" title="Trivial Asset"></i>
+                    <input type="checkbox" class="select_asset_criticality" name="select_asset_criticality" value="critical">
+                    <i class="fa fa-arrow-up" style="padding-right:5px;color:#ff1a1a" title="Critical Asset"></i>
+                </td>
+            </tr>
+        </table>
+
+        <table id = "triage_table" class="table table-striped table-sm table-bordered" style="width:98%">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" class="selectAll" name="selectAll" value="all"></th>
+                    <th>Name</th>
+                    <th>Severity (Inherited <i class="glyphicon glyphicon-arrow-right"></i> Projected)</th>
+                    <th>Criticality</th>
+                    <th>Accessibility</th>
+                    <th>CVSS</th>
+                    <th>Host</th>
+                    <th>Port</th>
+                    <th>Scan Date</th>
+                    <th>vPRisk</th>
+                    <th>Triaged</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vuln in vulns %}
+                    <tr>
+                        <td></td>
+                        <td>
+                            <a href="/vp/{{project_id}}/vulndetail?name={{vuln.1}}">{{vuln.1}}</a>
+                        </td>
+                        {% load tags %}
+                        <td style="white-space: nowrap;">
+                            <span class="badge" style="background-color:{{vuln.6|backgroundcolor}}">{{vuln.6}}</span>
+                            <i class="glyphicon glyphicon-arrow-right"></i>
+                            <span class="badge" style="background-color:{{vuln.7|backgroundcolor}}">{{vuln.7}}</span>
+                        </td>
+                        <td style="white-space: nowrap">
+                            {{vuln.9}}<i {{vuln.9|asset_criticality_icon|safe}}></i>
+                        </td>
+                        <td style="white-space: nowrap">
+                            {{vuln.3|accessibilityicon|safe}}
+                        </td>
+                        <td>{{vuln.2|floatformat:"1"}}</td>
+                        <td >
+                            {{vuln.3}}
+                        </td>
+                        <td>{{vuln.4}}</td>
+                        <td>{{vuln.5}}</td>
+                        <td>
+                            <span class="badge" title="{{vuln.11}}">{{vuln.10}}</span>
+                         </td>
+                        <td style="font-size:12px;">
+                            <label class="switch">
+                                {% if vuln.8 == "1" %}
+                                    <input  type="checkbox" class="success" checked>
+                                {% else %}
+                                    <input type="checkbox" class="success">
+                                {% endif %}
+                                <span class="slider round"></span>
+                            </label>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td colspan="8">
+                        <div id="triage-panel" class="panel" style="display:none;background-color:transparent;">
+                            <form id="triage-form" action="/vp/{{project_id}}/do_triage" method="POST">
+                                <input type="hidden" name="id" value="" id="id">
+                                    <select id="severity" name="severity{{vuln.0}}" >
+                                        <option value="Critical">Critical</option>
+                                        <option value="High">High</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="Low">Low</option>
+                                        <option value="Informational">Informational</option>
+                                        <option value="FalsePositive">FalsePositive</option>
+                                        <option value="RiskAccepted">RiskAccepted</option>
+                                    </select>
+                                    <select id="asset" name="asset">
+                                        <option value="critical">Critical</option>
+                                        <option value="moderate">Moderate</option>
+                                        <option value="trivial">Trivial</option>
+                                    </select>
+                                <input type="text" name="reason" id="reason" value="Reason...">
+                                <button type="submit" class="btn btn-primary" style="color: rgb(184, 199, 206);background-color: #20A8D8;border: none;padding:3px 6px;margin-top:-5px;margin-left:10px;" value="">
+                                    <i class="glyphicon glyphicon-ok" style="color:#FFFFFF;"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                    <td>
+                        <button id="triage-link{{vuln.0}}${{vuln.1}}" style="background-color:transparent;border:none;font-size:25px">
+                            <i class="glyphicon glyphicon-edit" style="color:#1a1aff"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock %}

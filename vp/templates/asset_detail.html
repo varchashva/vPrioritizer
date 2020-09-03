@@ -1,0 +1,41 @@
+{% extends "master.html" %}
+{% block content %}
+
+<div id="asset-container" style="left:200px;top:60px">
+    {% load tags %}
+        <table class="table" style="width:98%">
+            <tr>
+                <td style="font-size:20px">
+                    {{ip}}
+                    <i {{asset_criticality|asset_criticality_icon|safe}}></i>
+                    <i {{ip|accessibilityicon|safe}}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h4>Impacting Vulnerabilities</h4>
+                        <ul>
+                            {% for vuln in vulns %}
+                               <li>{{vuln.0}}
+                                   <span class="badge">{{vuln.1}}</span>
+                                   <span class="badge">{{vuln.2}}</span>
+                                   <span class="badge" style="background-color:{{vuln.3|backgroundcolor}}">{{vuln.3}}</span>
+                                   <i class="glyphicon glyphicon-arrow-right"></i>
+                                   <span class="badge" style="background-color:{{vuln.4|backgroundcolor}}">{{vuln.4}}</span></li>
+                            {% endfor %}
+                        </ul>
+                </td>
+            </tr>
+        </table>
+</div>
+
+<style>
+    #asset-container {
+        top: 80;
+        bottom: 0;
+        left: 320;
+        right: 0;
+        position: absolute;
+    }
+</style>
+{% endblock %}

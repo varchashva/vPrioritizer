@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{title}}</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/ionicons.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/dash/css/AdminLTE.min.css">
+    <link rel="stylesheet" href="/static/dash/css/skins/_all-skins.min.css">
+    <link rel="stylesheet" href="/static/plugins/jQuery/datatables.min.css">
+    <link rel="stylesheet" href="/static/plugins/jQuery/datatables.select.min.css">
+    <link rel="stylesheet" href="/static/plugins/jQuery/jquery-ui.css">
+
+    <script src="/static/plugins/jQuery/jQuery-3.3.1.min.js"></script>
+    <script src="/static/plugins/jQuery/datatables.min.js"></script>
+    <script src="/static/plugins/jQuery/dataTables.select.min.js"></script>
+    <script src="/static/plugins/jQuery/dataTables.buttons.min.js"></script>
+    <script src="/static/plugins/jQuery/jquery-ui.js"></script>
+    <script src="/static/plugins/fastclick/fastclick.min.js"></script>
+    <script src="/static/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+    <script src="/static/plugins/jQuery/chart.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/dash/js/app.min.js"></script>
+    <script src="/static/js/docs.js"></script>
+    <script src="/static/js/vprioritizer.js"></script>
+</head>
+
+<body class="skin-blue fixed" data-spy="scroll" data-target="#scrollspy">
+    <div class="wrapper">
+        <header class="main-header">
+            <a href="/vp/vprioritizer/dashboard" class="logo">
+                <span class="logo-mini">vPrioritizer</span>
+                <span class="logo-lg"><b>vPrioritizer</b></span>
+            </a>
+            <nav class="navbar navbar-static-top" role="navigation">
+                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                </a>
+                <div class="navbar-custom-menu">
+                    <span class="dropdown" style="float:left;padding:9px">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Select Project<span class="caret"></span></button>
+                    <span class="badge" style="background:#3971ac"><i class="glyphicon glyphicon-ok" style="padding-right:5px;color: rgb(184, 199, 206);"></i>{{project_id|default:"NAN"}}</span>
+                    <ul class="dropdown-menu">
+                        <input class="form-control" id="searchform" type="text" style="padding: 10px;margin-top: -6px;border: 0;border-radius: 0;background: #f1f1f1;" placeholder="Search...">
+                        {% for project in project_list %}
+                            <li><a href="/vp/{{project}}/dashboard">{{project}}</a></li>
+                        {% endfor %}
+                    </ul>
+                </span>
+                    <ul class="nav navbar-nav" style="border-left: medium outset white;">
+                        <ul class="nav navbar-nav">
+                            <li><a href="/vp/{{project_id}}/dashboard"><i class="fa fa-pie-chart" style="line-height:1.3" title="Dashboard"></i></a></li>
+                            <li><a href="/vp/{{project_id}}/triage"><i class="fa  fa-pencil-square-o" style="line-height:1.3" title="Triage"></i></a></li>
+                            <li><a href="/vp/{{project_id}}/asset_lookup"><i class="fa fa-desktop" style="line-height:1.3" title="Asset Lookup"></i></a></li>
+                            <li><a href="/vp/{{project_id}}/vuln_lookup"><i class="fa fa-bug" style="line-height:1.3" title="Vulnerability Lookup"></i></a></li>
+                            <li><a href="https://github.com/varchashva/vPrioritizer"><i class="fa fa-book" style="line-height:1.3" title="ReadMe"></i></a>
+                        </li>
+                    </ul>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <aside class="main-sidebar">
+            <div class="sidebar" id="scrollspy">
+                <ul class="nav sidebar-menu">
+                    <li class="treeview">
+                        <a href="javascript::;"><i class="glyphicon glyphicon-plus" style="color: rgb(184, 199, 206);"></i>Create Project</a>
+                        <ul class="nav treeview-menu">
+                                <div class="input-group">
+                                    <form action="/vp/create" method="POST">
+                                        <div class="input-group-prepend">
+                                           <input type="text" value="[Project Name]" name="projectname" style="width:100px;font-size:12px">
+                                            <button type="submit" class="btn btn-primary" style="color: rgb(184, 199, 206);background-color: #2C3B41;border: none;" value="">
+                                                <i class="fa fa-plus" style="color: rgb(184, 199, 206);margin-left:-8px"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </ul>
+                    </li>
+                    <li class="treeview">
+                        <a href="javascript::;"><i class="fa fa-upload" style="color: rgb(184, 199, 206);"></i>Upload</a>
+                        <ul class="nav treeview-menu">
+                            <div class="input-group">
+                                <form action="/vp/{{project_id}}/parse" method="POST" enctype="multipart/form-data" >
+                                    <input type="file" name="scanfile" id="scanfile" style="color: rgb(184, 199, 206);background-color: #220A8D8;border: none;display:inline-block;width:80px">
+                                    <button type="submit" style="color: rgb(184, 199, 206);background-color: #2C3B41;border: none;" value="" name="submit"><i class="fa  fa-floppy-o" style="color: rgb(184, 199, 206);"></i></button>
+                                </form>
+                            </div>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

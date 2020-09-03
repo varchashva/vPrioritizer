@@ -1,0 +1,23 @@
+version: '3'
+services:
+  postgres:
+    image: "postgres:9.5"
+    restart: always
+    volumes:
+      - /data
+    environment:
+      - POSTGRES_PASSWORD=vprioritizer
+      - POSTGRES_USER=vprioritizer
+      - POSTGRES_DB=vprioritizer
+    ports:
+      - "5432:5432"
+    network_mode: host
+  vprioritizer:
+    image: "pramodrana/vprioritizer:beta"
+    restart: always
+    ports:
+      - "7777:7777"
+    network_mode: host
+    depends_on:
+      - postgres
+    command: ["python","manage.py","runserver","0.0.0.0:7777"]

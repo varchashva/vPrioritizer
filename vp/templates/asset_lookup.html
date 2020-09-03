@@ -1,0 +1,283 @@
+{% extends "master.html" %}
+{% block content %}
+
+
+<style>
+
+/* The switch - the box around the slider */
+.switch {
+  position: absolute;
+  display: inline-block;
+  width: 40px;
+  height: 24px;
+  float:left;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input.default:checked + .slider {
+  background-color: #444;
+}
+input.primary:checked + .slider {
+  background-color: #2196F3;
+}
+input.success:checked + .slider {
+  background-color: #8bc34a;
+}
+input.info:checked + .slider {
+  background-color: #3de0f5;
+}
+input.warning:checked + .slider {
+  background-color: #FFC107;
+}
+input.danger:checked + .slider {
+  background-color: #f44336;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(16px);
+  -ms-transform: translateX(16px);
+  transform: translateX(16px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 24px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+
+
+</style>
+
+
+<script>
+$(document).ready(function(){
+  $("#searchform").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $(".dropdown-menu li").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+
+
+$(document).ready(function () {
+    vprisk_range = $( "#vprisk_range" );
+    var vprisk_range_val = $( "#vprisk_range_val" );
+    vprisk_range.slider({
+        range: true,
+        min: 0,
+        max: 500,
+        step: 1,
+        values: [ 0, 500 ],
+        slide: function( event, ui ) {
+          vprisk_range_val.val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+        },
+        stop: function( event, ui ) {
+            table.draw();
+        }
+    });
+
+    vprisk_range_val.val(vprisk_range.slider( "values", 0 ) + " - " + vprisk_range.slider( "values", 1 ) );
+
+    var table = $('#asset_table').DataTable({
+        columnDefs: [ {
+            orderable: false,
+            className: 'select-checkbox',
+            targets:   0,
+        } ],
+        select: {
+            style:    'os',
+            selector: 'td:first-child'
+        },
+        "order": [[5,"desc"],[1,"asc"]],
+        "pagingType": "full_numbers",
+        "paging": true,
+        "bFilter": true,
+    });
+
+    $('.dataTables_length').addClass('bs-select');
+});
+
+
+$(document).on('click', ':button', function(event) {
+    var table = $('#asset_table').DataTable();
+    var rows = table.rows( { selected: true } );
+
+    rows.every( function ( rowIdx, tableLoop, rowLoop ) {
+        var ip = $(this.data()[1]).text();
+        console.log(ip);
+        $("#id").val($("#id").val().concat(",").concat(ip));
+        console.log($("#id").val());
+    });
+
+    var panelname = "#".concat(event.target.id.split("$")[0].replace("link","panel"));
+    $(panelname).toggle();
+});
+
+var vprisk_range;
+
+$.fn.dataTable.ext.search.push( function( settings, data, dataIndex ) {
+    var min = parseFloat(vprisk_range.slider( "values", 0 ));
+    var max = parseFloat(vprisk_range.slider( "values", 500 ));
+    var col = parseFloat( data[5]  ) || 0; // data[number] = column number
+    if ( ( isNaN( min ) && isNaN( max ) ) ||
+         ( isNaN( min ) && col <= max ) ||
+         ( min <= col   && isNaN( max ) ) ||
+         ( min <= col   && col <= max ) ) {
+        return true;
+    }
+    return false;
+});
+
+</script>
+<style>
+        #settings-container {
+            top: 60px;
+            bottom: 0;
+            left: 160px;
+            right: 10px;
+            position: absolute;
+        }
+    </style>
+
+<div id="settings-container">
+    <table style="width:98%">
+        <tr>
+            <td>
+                <div id="slider" style="padding-bottom:20px;padding-top:20px;">
+                   <label>vPRisk: </label>
+                   <input class="text" id="vprisk_range_val" readonly style="border:0; color:#f6931f; font-weight:bold;width:55px">
+                   <div id="vprisk_range" style="width:200px;display:inline-block;"></div>
+                </div>
+            </td>
+            <td style="font-size:20px">
+                <input type="hidden" id="asset_accessibility_filter" name="asset_accessibility_filter" value="">
+                <input type="checkbox" class="select_asset_accessibility" name="select_asset_accessibility" value="external">
+                <i class="fa fa-globe" style="padding-right:5px;color:#ff1a1a;font-size:20px" title="External Asset"></i>
+                <input type="checkbox" class="select_asset_accessibility" name="select_asset_accessibility" value="internal">
+                <i class="fa fa-desktop" style="padding-right:5px;color:#00b300;font-size:20px" title="Internal Asset"></i>
+            </td>
+            <td style="font-size:20px">
+                <input type="hidden" id="asset_criticality_filter" name="asset_criticality_filter" value="">
+                <input type="checkbox" class="select_asset_criticality" name="select_asset_criticality" value="moderate">
+                <i class="fa fa-arrows" style="padding-right:5px;color:#aaaaaa" title="Moderate Asset"></i>
+                <input type="checkbox" class="select_asset_criticality" name="select_asset_criticality" value="trivial">
+                <i class="fa fa-arrow-down" style="padding-right:5px;color:#00b300" title="Trivial Asset"></i>
+                <input type="checkbox" class="select_asset_criticality" name="select_asset_criticality" value="critical">
+                <i class="fa fa-arrow-up" style="padding-right:5px;color:#ff1a1a" title="Critical Asset"></i>
+            </td>
+        </tr>
+    </table>
+
+    <table id = "asset_table" class="table table-striped table-sm table-bordered" style="width:95%">
+        <thead>
+            <tr>
+                <th><input type="checkbox" class="selectAll" name="selectAll" value="all"></th>
+                <th>IP</th>
+                <th>Hostname</th>
+                <th>Criticality</th>
+                <th>Accessibility</th>
+                <th>vPRisk</th>
+                <th>% to Overall Risk</th>
+                <th>Triaged</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asset in assets %}
+            <tr>
+                {% load tags %}
+                <td></td>
+                <td><a href="/vp/{{project_id}}/asset_details?ip={{asset.0}}">{{asset.0}}</a></td>
+                <td>test</td>
+                <td style="white-space: nowrap">
+                    {{asset.1}}
+                    <i {{asset.1|asset_criticality_icon|safe}}></i>
+                </td>
+                <td style="white-space: nowrap">
+                    {{asset.0|accessibilityicon|safe}}
+                </td>
+                <td>
+                    <span class="badge" style="background-color:#E94B3C">{{asset.4}}</span>
+                </td>
+                <td>
+                    <span class="badge" style="background-color:#00539C">{{ asset.4|percentage:projected_risk }}%</span>
+                </td>
+                <td style="font-size:12px;">
+
+                    <label class="switch">
+                        {% if asset.3 == "1" %}
+                            <input  type="checkbox" class="success" checked>
+                        {% else %}
+                            <input type="checkbox" class="success">
+                        {% endif %}
+                        <span class="slider round"></span>
+                    </label>
+
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td></td>
+                <td colspan="6">
+                    <div id="triage-panel" class="panel" style="display:none;background-color:transparent;">
+                           <form id="triage-form" action="/vp/{{project_id}}/update_asset" method="POST">
+                                <input type="hidden" id="id" name="id" value="">
+                                <select id="asset" name="asset">
+                                    <option value="critical">Critical</option>
+                                    <option value="moderate">Moderate</option>
+                                    <option value="trivial">Trivial</option>
+                                </select>
+                                <input type="text" name="reason" id="reason" value="Reason...">
+                                <button type="submit" class="btn btn-primary" style="color: rgb(184, 199, 206);background-color: #20A8D8;border: none;padding:3px 6px;margin-top:-5px;margin-left:10px;" value="">
+                                    <i class="glyphicon glyphicon-ok" style="color:#FFFFFF;"></i>
+                                </button>
+                            </form>
+                    </div>
+                </td>
+                <td>
+                    <button id="triage-link" style="background-color:transparent;border:none;font-size:25px">
+                        <i class="glyphicon glyphicon-edit" style="color:#1a1aff"></i>
+                    </button>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+{% endblock %}

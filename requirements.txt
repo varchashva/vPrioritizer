@@ -1,0 +1,5 @@
+Django==1.11.7
+netifaces
+ipaddress
+psycopg2-binary
+requests

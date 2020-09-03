@@ -1,0 +1,183 @@
+{% extends "master.html" %}
+{% block content %}
+
+<div id="dashboard-container" style="left:200px;top:60px">
+    {% load tags %}
+    <table class="table" style="width:78%">
+        <tr>
+            <td colspan="4">
+                <canvas id="lineChart" width="800" height="250"></canvas>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:30%">
+                <canvas id="inheritedChart" width="350" height="350"></canvas>
+            </td>
+            <td style="width:13%">
+                <table class="table table-striped">
+                    <thead>
+                        <th>Top 5 Assets</th>
+                    </thead>
+                    {% for ip in top5ips %}
+                        <tr>
+                            <td style="white-space: nowrap;">
+                                <a href="/vp/{{project_id}}/asset_details?ip={{ip.0}}">{{ip.0}}</a>
+                                <span class="badge" title="vPRisk" style="background-color:#E94B3C">{{ip.1}}</span>
+                                <span class="badge" title="% to Overall Risk" style="background-color:#00539C">{{ ip.1|percentage:projected_risk }}%</span>
+                                <i {{ip.2|asset_criticality_icon|safe}}></i>
+                                <i {{ip.0|accessibilityicon|safe}}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </td>
+            <td style="width:35%">
+                <table class="table table-striped">
+                    <thead>
+                        <th>Top 5 Vulnerabilities</th>
+                    </thead>
+                    {% for vuln in top5vulns %}
+                        <tr>
+                            <td>
+                                <a href="/vp/{{project_id}}/vulndetail?name={{vuln.0}}">{{vuln.0}}</a>
+                                <span class="badge" title="vPRisk" style="background-color:#E94B3C">{{vuln.1}}</span>
+                                <span class="badge" title="% to Overall Risk" style="background-color:#00539C">{{ vuln.1|percentage:projected_risk }}%</span>
+                                <span class="badge" title="Projected Risk" style="background-color:{{vuln.2|backgroundcolor}}">{{vuln.2}}</span>
+                                <span class="badge" title="Impacted Assets" style="background-color:#935529">{{vuln.3}}</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script>
+var ctxD1 = document.getElementById("inheritedChart").getContext('2d');
+var inherited_risk_value = {{inherited_risk}};
+var projected_risk_value = {{projected_risk}};
+
+inherdata = {
+    labels: ["Inherited Risk", "Projected Risk", "Industry Risk"],
+    datasets: [{
+        label: "Risk Value",
+        data: [inherited_risk_value, projected_risk_value, 0],
+        backgroundColor: ['rgba(0, 10, 130, .7)', 'rgba(255, 0, 0, .7)', 'rgba(205, 205, 205, 0.2)'],
+    }],
+    <!--labels: ["Inherited Risk", "Projected Risk", "Industry Risk"],-->
+};
+
+var displayText = inherited_risk_value.toString().concat(" / ").concat(projected_risk_value.toString());
+
+var myDoughnutChart1 = new Chart(ctxD1, {
+    type: 'bar',
+    data: inherdata,
+    centerText: {
+        display: true,
+        text: displayText
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        },
+        legend: {
+            display: false,
+        },
+        responsive: true,
+        maintainAspectRatio:false,
+        title: {
+            display: true,
+            text: 'Inherited Risk v/s Projected Risk'
+        }
+    }
+});
+
+Chart.Chart.pluginService.register({
+    beforeDraw: function(chart) {
+        if (chart.config.centerText.display !== null &&
+            typeof chart.config.centerText.display !== 'undefined' &&
+            chart.config.centerText.display) {
+            drawTotals(chart);
+        }
+    },
+});
+
+function drawTotals(chart) {
+    var chartInstance = chart.chart,
+    ctx = chartInstance.ctx;
+    ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    chart.data.datasets.forEach(function (dataset, i) {
+        var meta = chartInstance.controller.getDatasetMeta(i);
+        meta.data.forEach(function (bar, index) {
+            var data = dataset.data[index];
+            ctx.fillText(data, bar._model.x, bar._model.y - 5);
+        });
+    });
+}
+
+var projectedriskdata = {{projectedriskdata}};
+var inheritedriskdata = {{inheritedriskdata}};
+
+var ctxL = document.getElementById("lineChart").getContext('2d');
+
+var myLineChart = new Chart(ctxL, {
+    type: 'line',
+    centerText: {
+        display: false,
+        text: "280"
+    },
+    data: {
+        labels: {{risklabels|safe}},
+        datasets: [{
+            label: "Projected Risk",
+            data: projectedriskdata,
+            backgroundColor: 'rgba(255, 0, 0, .7)',
+            borderColor: 'rgba(255, 0, 0, .7)',
+            borderWidth: 2,
+            fill: false,
+        },
+        {
+            label: "Inherited Risk",
+            data: inheritedriskdata,
+            backgroundColor:'rgba(0, 10, 130, .7)',
+            borderColor: 'rgba(0, 10, 130, .7)',
+            borderWidth: 2,
+            fill: false,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio:false,
+        legend: {
+             display: true,
+             position: 'top',
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+
+</script>
+
+<style>
+        #dashboard-container {
+            top: 80;
+            bottom: 0;
+            left: 300;
+            right: 0;
+            position: absolute;
+        }
+</style>
+{% endblock %}
