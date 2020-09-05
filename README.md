@@ -33,7 +33,7 @@ vPrioritizer enables us to understand the contextualized risk pertaining to each
    - sudo apt-get install docker-ce docker-compose
 2. wget https://raw.githubusercontent.com/varchashva/vPrioritizer/master/docker-compose.yml
 3. docker-compose up
-4. Browse to http://localhost:7777/ and you are set to explore the tool :)
+4. Browse to http://localhost:7777/vp and you are set to explore the tool :)
 
 ### For Windows and Mac users:
 1. Install [postgres](https://www.postgresql.org/docs/9.3/installation.html)
@@ -44,7 +44,7 @@ vPrioritizer enables us to understand the contextualized risk pertaining to each
 3. git clone https://github.com/varchashva/vPrioritizer.git
 4. cd vPrioritizer
 5. python manage.py runserver 0.0.0.0:7777
-6. Browse to http://localhost:7777/ and you are set to explore the tool :)
+6. Browse to http://localhost:7777/vp and you are set to explore the tool :)
 
 # DEMO 
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/P9IDpfJDoxI/0.jpg)](http://www.youtube.com/watch?v=P9IDpfJDoxI "vPrioritizer Demo")
