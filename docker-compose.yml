@@ -13,7 +13,7 @@ services:
       - "5432:5432"
     network_mode: host
   vprioritizer:
-    image: "pramodrana/vprioritizer:beta"
+    image: "pramodrana/vprioritizer:1.0"
     restart: always
     ports:
       - "7777:7777"

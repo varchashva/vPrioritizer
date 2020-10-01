@@ -436,7 +436,7 @@ def insert_row_into_databse(row, conn, project_id,scanner,mapping):
     # CVE -> PoC
     output_index = 0
     for key in order_list:
-        if mapping[key] == "":
+        if mapping[key] == "None":
             insertintosqlquery = insertintosqlquery + "NULL,"
         else:
             if "port" in key:
