@@ -41,15 +41,15 @@
                 </a>
                 <div class="navbar-custom-menu">
                     <span class="dropdown" style="float:left;padding:9px">
-                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Select Project<span class="caret"></span></button>
-                    <span class="badge" style="background:#3971ac"><i class="glyphicon glyphicon-ok" style="padding-right:5px;color: rgb(184, 199, 206);"></i>{{project_id|default:"NAN"}}</span>
-                    <ul class="dropdown-menu">
-                        <input class="form-control" id="searchform" type="text" style="padding: 10px;margin-top: -6px;border: 0;border-radius: 0;background: #f1f1f1;" placeholder="Search...">
-                        {% for project in project_list %}
-                            <li><a href="/vp/{{project}}/dashboard">{{project}}</a></li>
-                        {% endfor %}
-                    </ul>
-                </span>
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Select Project<span class="caret"></span></button>
+                        <span class="badge" style="background:#3971ac"><i class="glyphicon glyphicon-ok" style="padding-right:5px;color: rgb(184, 199, 206);"></i>{{project_id|default:"NAN"}}</span>
+                        <ul class="dropdown-menu">
+                            <input class="form-control" id="searchform" type="text" style="padding: 10px;margin-top: -6px;border: 0;border-radius: 0;background: #f1f1f1;" placeholder="Search...">
+                            {% for project in project_list %}
+                                <li><a href="/vp/{{project}}/dashboard">{{project}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </span>
                     <ul class="nav navbar-nav" style="border-left: medium outset white;">
                         <ul class="nav navbar-nav">
                             <li><a href="/vp/{{project_id}}/dashboard"><i class="fa fa-pie-chart" style="line-height:1.3" title="Dashboard"></i></a></li>
