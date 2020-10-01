@@ -69,5 +69,4 @@ vPrioritizer enables us to understand the contextualized risk pertaining to each
 
 Thanks to [Jyoti Raval](https://www.linkedin.com/in/jyoti-raval-61565157) for being an exceptional QA.
 
-Please reach out to me for any query/comment/suggestion: [LinkedIn](https://www.linkedin.com/in/pramod-rana-696ba062/) \| [Twitter](https://twitter.com/IAmVarchashva) \| [Raise an issue](https://github.com/varchashva/vPrioritizer/issues/new)
-
+Please reach out to me for any query/comment/suggestion: [LinkedIn](https://www.linkedin.com/in/pramod-rana-696ba062/) \| [![Twitter Follow](https://img.shields.io/twitter/follow/IAmVarchashva?style=social)](https://twitter.com/IAmVarchashva) \| [Raise an issue](https://github.com/varchashva/vPrioritizer/issues/new)

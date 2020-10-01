@@ -223,24 +223,24 @@ $.fn.dataTable.ext.search.push( function( settings, data, dataIndex ) {
                 {% load tags %}
                 <td></td>
                 <td><a href="/vp/{{project_id}}/asset_details?ip={{asset.0}}">{{asset.0}}</a></td>
-                <td>test</td>
+                <td>{{asset.1}}</td>
                 <td style="white-space: nowrap">
-                    {{asset.1}}
+                    {{asset.2}}
                     <i {{asset.1|asset_criticality_icon|safe}}></i>
                 </td>
                 <td style="white-space: nowrap">
                     {{asset.0|accessibilityicon|safe}}
                 </td>
                 <td>
-                    <span class="badge" style="background-color:#E94B3C">{{asset.4}}</span>
+                    <span class="badge" style="background-color:#E94B3C">{{asset.5}}</span>
                 </td>
                 <td>
-                    <span class="badge" style="background-color:#00539C">{{ asset.4|percentage:projected_risk }}%</span>
+                    <span class="badge" style="background-color:#00539C">{{ asset.5|percentage:projected_risk }}%</span>
                 </td>
                 <td style="font-size:12px;">
 
                     <label class="switch">
-                        {% if asset.3 == "1" %}
+                        {% if asset.4 == "1" %}
                             <input  type="checkbox" class="success" checked>
                         {% else %}
                             <input type="checkbox" class="success">

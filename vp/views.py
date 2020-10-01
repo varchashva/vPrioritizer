@@ -4,6 +4,8 @@ from datetime import datetime
 import psycopg2
 import ipaddress
 import string, random
+import re
+import json
 
 from django.shortcuts import render,redirect
 from django.conf import settings
@@ -248,21 +250,19 @@ def parse(request, project_id):
                           temp_db_id + \
                           " (ID BIGSERIAL PRIMARY KEY NOT NULL,"
     for head in headers:
-        table_create_string = table_create_string + str(head).replace(" ","_") + " TEXT,"
+        table_create_string = table_create_string + re.sub('[\W_]+', '_', str(head)) + " TEXT,"
     table_create_string = rreplace(table_create_string, ",", ")", 1)
-
     conn = get_me_connection()
     cur = conn.cursor()
     cur.execute(table_create_string)
     conn.commit()
     print "[*] Temporary database " + str(temp_db_id) + " created"
-
     for row in file_reader:
         insert_into_string = "INSERT INTO " + \
                              temp_db_id + \
                              " ("
         for head in headers:
-            insert_into_string = insert_into_string + str(head).replace(" ", "_") + ","
+            insert_into_string = insert_into_string + re.sub('[\W_]+', '_', str(head)) + ","
         insert_into_string = rreplace(insert_into_string, ",", ")", 1)
         insert_into_string = insert_into_string + " VALUES("
         for head in headers:
@@ -273,51 +273,11 @@ def parse(request, project_id):
         insert_into_string = rreplace(insert_into_string,",",")",1)
         cur.execute(insert_into_string)
         conn.commit()
+    print "Temp table " + str(temp_db_id) + " populated successfully"
 
     entries = []
+    mapping = get_column_mapping(temp_db_id)
 
-    if "Asset IP Address" in headers:
-        scanner = "nexpose"
-        mapping = {
-            'cve': 'Vulnerability_CVE_IDs',
-            'cvss': 'Vulnerability_CVSS_Score',
-            'ip': 'Asset_IP_Address',
-            'hostname': 'Asset_Names',
-            'protocol': 'Service_Name',
-            'port': 'Service_Port',
-            'name': 'Vulnerability_Title',
-            'description': 'Vulnerability_Description',
-            'solution': 'Vulnerability_Solution',
-            'poc': 'Vulnerability_Proof',
-        }
-    elif "Plugin ID" in headers:
-        scanner = "nessus"
-        mapping = {
-            'cve': 'CVE',
-            'cvss': 'CVSS',
-            'ip': 'Host',
-            'hostname': '',
-            'protocol': 'Protocol',
-            'port': 'Port',
-            'name': 'Name',
-            'description': 'Description',
-            'solution': 'Solution',
-            'poc': 'Plugin_Output',
-        }
-    elif "QID" in headers:
-        scanner = "qualys"
-        mapping = {
-            'cve': 'CVE_ID',
-            'cvss': 'CVSS_Base',
-            'ip': 'IP',
-            'hostname': 'DNS',
-            'protocol': 'Protocol',
-            'port': 'Port',
-            'name': 'Title',
-            'description': 'Threat',
-            'solution': 'Solution',
-            'poc': 'Results',
-        }
     order_list = [
         'cve',
         'cvss',
@@ -333,7 +293,7 @@ def parse(request, project_id):
 
     select_query_string = "SELECT "
     for key in order_list:
-        if mapping[key] != "":
+        if mapping[key] != "None":
             select_query_string = select_query_string + mapping[key] + ","
     select_query_string = rreplace(select_query_string,",","",1)
     select_query_string = select_query_string + " FROM " + temp_db_id + " LIMIT 2"
@@ -343,9 +303,9 @@ def parse(request, project_id):
     output_index = 0
     for key in order_list:
         entries_element = []
-        if mapping[key] == "":
+        if mapping[key] == "None":
             entries_element.append("NONE")
-            entries_element.append(key)
+            entries_element.append(str(key).upper())
             entries_element.append("NONE")
             entries_element.append("NONE")
         else:
@@ -355,19 +315,22 @@ def parse(request, project_id):
             entries_element.append(output[1][output_index])
             output_index = output_index + 1
         entries.append(entries_element)
-
+    scanner = "nessus"
     context = {
         "temp_db_id": temp_db_id,
         "project_id": project_id,
         "entries": entries,
         "scanner": scanner,
-        "project_list": get_project_list()
+        "project_list": get_project_list(),
+        "columns": get_columns_list(temp_db_id)
     }
     return render(request, 'parse.html', context)
 
 def upload(request,project_id):
     temp_db_id = request.POST.get("temp_db_id")
     scanner = request.POST.get("scanner")
+    custom_mapping = json.loads(str(request.POST.get("mapping")))
+    print "Custom Mapping: " + str(custom_mapping)
     conn = get_me_connection()
     cur = conn.cursor()
     if "complete" in request.POST:
@@ -396,46 +359,8 @@ def upload(request,project_id):
                         asset_criticality TEXT DEFAULT 'moderate');''')
             conn.commit()
             print "Project " + project_id + " created successfully"
+        mapping = get_column_mapping(temp_db_id)
 
-        if "nexpose" in scanner:
-            mapping = {
-                'cve': 'Vulnerability_CVE_IDs',
-                'cvss': 'Vulnerability_CVSS_Score',
-                'ip': 'Asset_IP_Address',
-                'hostname': 'Asset_Names',
-                'protocol': 'Service_Name',
-                'port': 'Service_Port',
-                'name': 'Vulnerability_Title',
-                'description': 'Vulnerability_Description',
-                'solution': 'Vulnerability_Solution',
-                'poc': 'Vulnerability_Proof',
-            }
-        elif "nessus" in scanner:
-            mapping = {
-                'cve': 'CVE',
-                'cvss': 'CVSS',
-                'ip': 'Host',
-                'hostname': '',
-                'protocol': 'Protocol',
-                'port': 'Port',
-                'name': 'Name',
-                'description': 'Description',
-                'solution': 'Solution',
-                'poc': 'Plugin_Output',
-            }
-        elif "qualys" in scanner:
-            mapping = {
-                'cve': 'CVE_ID',
-                'cvss': 'CVSS_Base',
-                'ip': 'IP',
-                'hostname': 'DNS',
-                'protocol': 'Protocol',
-                'port': 'Port',
-                'name': 'Title',
-                'description': 'Threat',
-                'solution': 'Solution',
-                'poc': 'Results',
-            }
         order_list = [
             'cve',
             'cvss',
@@ -448,16 +373,20 @@ def upload(request,project_id):
             'solution',
             'poc',
         ]
+
+        for (key,value) in custom_mapping.items():
+            mapping[str(key).lower()] = custom_mapping[key]
+        print "Final Mapping: " + str(mapping)
         select_query_string = "SELECT "
         for key in order_list:
-            if mapping[key] != "":
+            if mapping[key] != "None":
                 select_query_string = select_query_string + mapping[key] + ","
         select_query_string = rreplace(select_query_string, ",", "", 1)
         select_query_string = select_query_string + " FROM " + temp_db_id
         cur.execute(select_query_string)
         output = cur.fetchall()
         for entry in output:
-            insert_row_into_databse(entry,conn,project_id,scanner)
+            insert_row_into_databse(entry,conn,project_id,scanner,mapping)
     print "[-] Deleting temp database " + temp_db_id
     cur.execute("DROP TABLE " + temp_db_id)
     conn.commit()
@@ -470,52 +399,10 @@ def rreplace(s, old, new, occurrence):
 def formatstring(str):
     return str.replace(":","-").replace("'","")
 
-def insert_row_into_databse(row, conn, project_id,scanner):
+def insert_row_into_databse(row, conn, project_id,scanner,mapping):
     cur = conn.cursor()
     print row
-    if scanner == "nessus":
-        mapping = {
-            'cve': 'CVE',
-            'cvss': 'CVSS',
-            'ip': 'Host',
-            'hostname': '',
-            'protocol': 'Protocol',
-            'port': 'Port',
-            'name': 'Name',
-            'description': 'Description',
-            'solution': 'Solution',
-            'poc': 'Plugin_Output',
-            'source': 'source',
-            'scandate': 'scandate',
-            'inherited_severity': 'inherited_severity',
-            'projected_severity': 'projected_severity',
-        }
-    elif scanner == "nexpose":
-        mapping = {
-            'cve': 'Vulnerability_CVE_IDs',
-            'cvss': 'Vulnerability_CVSS_Score',
-            'ip': 'Asset_IP_Address',
-            'hostname': 'Asset_Names',
-            'protocol': 'Service_Name',
-            'port': 'Service_Port',
-            'name': 'Vulnerability_Title',
-            'description': 'Vulnerability_Description',
-            'solution': 'Vulnerability_Solution',
-            'poc': 'Vulnerability_Proof',
-        }
-    elif scanner == "qualys":
-        mapping = {
-            'cve': 'CVE_ID',
-            'cvss': 'CVSS_Base',
-            'ip': 'IP',
-            'hostname': 'DNS',
-            'protocol': 'Protocol',
-            'port': 'Port',
-            'name': 'Title',
-            'description': 'Threat',
-            'solution': 'Solution',
-            'poc': 'Results',
-        }
+
     order_list = [
         'cve',
         'cvss',
@@ -649,7 +536,7 @@ def asset_lookup(request,project_id):
     conn = get_me_connection()
     print "[*] Database connected successfully"
     cur = conn.cursor()
-    cur.execute("SELECT DISTINCT ip,asset_criticality FROM vprioritizer_" + project_id)
+    cur.execute("SELECT DISTINCT ip,hostname,asset_criticality FROM vprioritizer_" + project_id)
     cur1 = conn.cursor()
 
     assets = []
@@ -687,6 +574,16 @@ def get_me_connection():
     print "[*] Database connected successfully"
     return conn
 
+def get_columns_list(table_name):
+    columns_list = []
+    conn = get_me_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS where table_name = '" + str(table_name).lower() + "';")
+    output = cur.fetchall()
+    for entry in output:
+        columns_list.append(str(entry[0]))
+    return columns_list
+
 def get_project_list():
     project_list = []
     conn = get_me_connection()
@@ -696,3 +593,40 @@ def get_project_list():
     for entry in output:
         project_list.append(str(entry[0]).replace("vprioritizer_","",1))
     return project_list
+
+def get_column_mapping(temp_db_id):
+    mapping = {
+        'cve': 'None',
+        'cvss': 'None',
+        'ip': 'None',
+        'hostname': 'None',
+        'protocol': 'None',
+        'port': 'None',
+        'name': 'None',
+        'description': 'None',
+        'solution': 'None',
+        'poc': 'None',
+    }
+    columns_list = get_columns_list(temp_db_id)
+    for key in columns_list:
+        if "cve" in key and "None" in mapping["cve"]:
+            mapping["cve"] = key
+        elif "cvss" in key and "None" in mapping["cvss"]:
+            mapping["cvss"] = key
+        elif ("ip" in key or "host" in key) and ("None" in mapping["ip"]):
+            mapping["ip"] = key
+        elif ("dns" in key or "asset_name" in key) and ("None" in mapping["hostname"]):
+            mapping["hostname"] = key
+        elif ("protocol" in key or "service_name" in key) and ("None" in mapping["protocol"]):
+            mapping["protocol"] = key
+        elif "port" in key and "None" in mapping["port"]:
+            mapping["port"] = key
+        elif ("title" in key or "name" in key) and ("None" in mapping["name"]):
+            mapping["name"] = key
+        elif ("description" in key or "threat" in key) and ("None" in mapping["description"]):
+            mapping["description"] = key
+        elif "solution" in key and "None" in mapping["solution"]:
+            mapping["solution"] = key
+        elif ("proof" in key or "output" in key or "result" in key) and "None" in mapping["poc"]:
+            mapping["poc"] = key
+    return mapping
