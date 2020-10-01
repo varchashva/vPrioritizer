@@ -1,6 +1,8 @@
 [![Logo](images/vprioritizer_logo.png)]()
 
-[![BHUSA2020](images/BHUSA2020.svg)](https://www.blackhat.com/us-20/arsenal/schedule/#vprioritizer-learn-to-say-no-to-almost-every-vulnerability-art-of-risk-prioritisation-21192) \| [Overview](#overview) \| [How it works](#how-it-works) \| [Quickstart](#quickstart) \| [Roadmap](#roadmap) \| [Contact Me](#contribution--contact-me)
+[![BHUSA2020](images/BHUSA2020.svg)](https://www.blackhat.com/us-20/arsenal/schedule/#vprioritizer-learn-to-say-no-to-almost-every-vulnerability-art-of-risk-prioritisation-21192) [![License](https://img.shields.io/badge/License-GPLv3.0-blue)](https://github.com/varchashva/vPrioritizer/blob/master/LICENSE)
+
+[Overview](#overview) \| [How it works](#how-it-works) \| [Quickstart](#quickstart) \| [Roadmap](#roadmap) \| [Contact Me](#contribution--contact-me)
 
 # Overview
 As indicated by sources like vulndb & cve, on a daily basis, approximately 50 new vulnerabilities become known to industry and it’s safe to assume that count is going to increase furthermore. It’s a huge number of vulnerabilities to assess and remediate effectively and quickly. So today organizations are focusing (or should focus) on reducing the risk rather than eliminating it and vulnerability management is (almost) equal to risk prioritisation and risk is a variable and dynamic concept determined by multiple factors.
@@ -50,6 +52,7 @@ vPrioritizer enables us to understand the contextualized risk pertaining to each
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/P9IDpfJDoxI/0.jpg)](http://www.youtube.com/watch?v=P9IDpfJDoxI "vPrioritizer Demo")
 
 # Roadmap
+- [ ] Docker support for all OS (Linux, Mac, Windows)
 - Integration with scanners API:
   - [ ] Nexpose
   - [ ] QualysGuard
@@ -58,7 +61,7 @@ vPrioritizer enables us to understand the contextualized risk pertaining to each
     - [ ] AWS Inspector
     - [ ] Azure Security Center
     - [ ] GCP Security Command Center
-- [ ] “Custom Upload Field” module
+- [x] “Custom Upload Field” module
 - [ ] Cumulation of vulnerabilities 
 - [ ] Custom “Settings” page
 - [ ] Maintaining the KB for vulnerabilities 
@@ -69,4 +72,4 @@ vPrioritizer enables us to understand the contextualized risk pertaining to each
 
 Thanks to [Jyoti Raval](https://www.linkedin.com/in/jyoti-raval-61565157) for being an exceptional QA.
 
-Please reach out to me for any query/comment/suggestion: [LinkedIn](https://www.linkedin.com/in/pramod-rana-696ba062/) \| [![Twitter Follow](https://img.shields.io/twitter/follow/IAmVarchashva?style=social)](https://twitter.com/IAmVarchashva) \| [Raise an issue](https://github.com/varchashva/vPrioritizer/issues/new)
+Please reach out to me for any query/comment/suggestion: [![LinkedIn](https://img.shields.io/badge/linkedin-%230077B5.svg?&style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/pramod-rana-696ba062/) \| [![Twitter Follow](https://img.shields.io/twitter/follow/IAmVarchashva?style=social)](https://twitter.com/IAmVarchashva) \| [Raise an issue](https://github.com/varchashva/vPrioritizer/issues/new)
