@@ -269,7 +269,8 @@ def parse(request, project_id):
             if row[head] == "" or not row[head]:
                 insert_into_string = insert_into_string + "NULL" + ","
             else:
-                insert_into_string = insert_into_string + "'" + formatstring(str(row[head])) + "',"
+                str_to_pass = re.sub(r'[^\x00-\x7f]',r'', row[head])
+                insert_into_string = insert_into_string + "'" + formatstring(str(str_to_pass)) + "',"
         insert_into_string = rreplace(insert_into_string,",",")",1)
         cur.execute(insert_into_string)
         conn.commit()
