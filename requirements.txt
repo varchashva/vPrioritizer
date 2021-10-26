@@ -1,4 +1,4 @@
-Django==1.11.7
+Django==2.2.24
 netifaces
 ipaddress
 psycopg2-binary
